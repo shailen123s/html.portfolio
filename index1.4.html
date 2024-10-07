@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shai Engineering</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        nav ul li {
+            display: inline;
+            margin-right: 15px;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        section {
+            padding: 20px;
+            margin: 20px;
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        /* Shop Section */
+        .shop-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+        .product {
+            background-color: white;
+            padding: 20px;
+            margin: 10px;
+            border-radius: 8px;
+            width: 30%;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .product img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        .cart {
+            position: fixed;
+            top: 10px;
+            right: 20px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .cart h4 {
+            margin-top: 0;
+        }
+        .cart-items {
+            list-style-type: none;
+            padding: 0;
+        }
+        .cart-items li {
+            padding: 5px 0;
+        }
+        .checkout-btn {
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .checkout-btn:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Shai Engineering</h1>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About Us</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#shop">Shop</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Shop Section -->
+    <section id="shop">
+        <h2>Shop</h2>
+        <div class="shop-grid">
+            <div class="product" data-category="tools" data-price="100">
+                <img src="https://via.placeholder.com/300" alt="Product 1">
+                <h3>Product 1 - Tool</h3>
+                <p>Price: $100</p>
+                <button onclick="addToCart('Product 1', 100, 'tools')">Add to Cart</button>
+            </div>
+            <div class="product" data-category="machinery" data-price="150">
+                <img src="https://via.placeholder.com/300" alt="Product 2">
+                <h3>Product 2 - Machinery</h3>
+                <p>Price: $150</p>
+                <button onclick="addToCart('Product 2', 150, 'machinery')">Add to Cart</button>
+            </div>
+            <div class="product" data-category="software" data-price="200">
+                <img src="https://via.placeholder.com/300" alt="Product 3">
+                <h3>Product 3 - Software</h3>
+                <p>Price: $200</p>
+                <button onclick="addToCart('Product 3', 200, 'software')">Add to Cart</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cart Section (fixed position on the screen) -->
+    <div class="cart">
+        <h4>Shopping Cart</h4>
+        <ul class="cart-items" id="cartItems"></ul>
+        <p>Total: $<span id="cartTotal">0</span></p>
+        <button class="checkout-btn" onclick="checkout()">Checkout</button>
+    </div>
+
+    <!-- Contact Section -->
+    <section id="contact">
+        <h2>Contact Us</h2>
+        <p>Email: contact@shaiengineering.com</p>
+        <p>Phone: +123-456-7890</p>
+        <p>Address: 123 Engineering Lane, City, Country</p>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Shai Engineering. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Cart functionality with grouping
+        let cart = {};
+        let total = 0;
+
+        // Add product to cart
+        function addToCart(product, price, category) {
+            // If the category doesn't exist in the cart, initialize it
+            if (!cart[category]) {
+                cart[category] = {};
+            }
+            // If the product doesn't exist, initialize with quantity 1, else increment
+            if (!cart[category][product]) {
+                cart[category][product] = { price: price, quantity: 1 };
+            } else {
+                cart[category][product].quantity++;
+            }
+            // Update total
+            total += price;
+            // Render the cart
+            renderCart();
+        }
+
+        // Render cart grouped by product type
+        function renderCart() {
+            let cartItems = document.getElementById('cartItems');
+            cartItems.innerHTML = '';
+            
+            // Loop through each category and product in the cart
+            for (let category in cart) {
+                let categoryTitle = document.createElement('li');
+                categoryTitle.innerHTML = `<strong>${capitalize(category)}</strong>`;
+                cartItems.appendChild(categoryTitle);
+                
+                for (let product in cart[category]) {
+                    let item = cart[category][product];
+                    let li = document.createElement('li');
+                    li.textContent = `${product} - $${item.price} x ${item.quantity} = $${item.price * item.quantity}`;
+                    cartItems.appendChild(li);
+                }
+            }
+            document.getElementById('cartTotal').textContent = total;
+        }
+
+        // Checkout button functionality
+        function checkout() {
+            alert('Total amount: $' + total + '. Proceed to checkout!');
+        }
+
+        // Helper function to capitalize first letter of category names
+        function capitalize(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+    </script>
+
+</body>
+</html>
